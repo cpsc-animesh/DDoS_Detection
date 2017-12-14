@@ -9,6 +9,7 @@ import math
 from sklearn.feature_selection import chi2
 from sklearn.feature_selection import SelectKBest
 from sklearn.neighbors import KDTree
+from sklearn.naive_bayes import  GaussianNB
 import pandas
 import csv,sys
 
@@ -111,7 +112,9 @@ def ig_list(traffic):
     print("The Information Gain values are:")
     print(gain_dict)
     print("The sorted Information Gain values are:")
-    print(sorted(gain_dict, key = gain_dict.get))
+    sorted_gain_list = sorted(gain_dict, key = gain_dict.get)
+    print(sorted_gain_list)
+    return sorted_gain_list
 
 def chi2_list():
     dataframe = pandas.read_csv(filename_adj, names=feature)
@@ -131,7 +134,9 @@ def chi2_list():
     np.set_printoptions(precision=3)
     print(chi2_dict)
     print("The sorted chi-squared values are: ")
-    print(sorted(chi2_dict, key = chi2_dict.get))
+    sorted_chi2_list = sorted(chi2_dict, key = chi2_dict.get)
+    print(sorted_chi2_list)
+    return sorted_chi2_list
 
 class reliefF(object):
     """Feature selection using data-mined expert knowledge.
@@ -245,6 +250,49 @@ class reliefF(object):
         self.fit(X, y)
         return self.transform(X)
 
+def naive_bayes(sorted_list):
+    selected_features = sorted_list[0:11]
+    selected_features.append('attack?')
+    print("Selected Features")
+    print(selected_features)
+    
+    dataframe = pandas.read_csv(filename, names=feature)
+    packets = dataframe.values
+    header_list = dataframe.columns.values
+
+    df_clax = pandas.DataFrame(columns=selected_features)
+    for i in range(len(selected_features)):
+        for j in range(len(header_list)):
+            if(header_list[j]==selected_features[i]):
+                df_clax[selected_features[i]] = dataframe[header_list[j]]
+    array_clx = df_clax.values
+    X = array_clx[:,0:11]
+    print(X)
+    Y = array_clx[:,11]
+    print("#################")
+    print(Y)
+    model = GaussianNB()
+    model.fit(X,Y)
+    list1 = [['1','1','1','1','1','1','1','1','1','1','1'],
+             ['0','0','0','0','0','0','0','0','0','0','0']]
+    
+    for i in range(0, len(list1)):
+        for j in range(0, len(list1[i])):
+            list1[i][j] = float(list1[i][j])
+    
+    print(list1)
+    predicted = model.predict(list1)
+    print(predicted)
+    
+    df_clax.to_csv('file_clx', ',')
+    
+def create_dataframe():
+    dataframe = pandas.read_csv(filename_adj, names=feature)
+    array = dataframe.values
+    X = array[:,0:41]
+    Y = array[:,41]
+    return X,Y
+
 def main():
     print("Starting application..")
     traffic = normalize()
@@ -256,20 +304,23 @@ def main():
     if(selection == 1):
         ent_list(traffic)
     elif(selection == 2):
-        ig_list(traffic)
+        sorted_gain_list = ig_list(traffic)
     elif(selection == 3):
-        chi2_list()
+        sorted_chi2_list = chi2_list()
     elif(selection == 4):
-        dataframe = pandas.read_csv(filename_adj, names=feature)
-        array = dataframe.values
-        X = array[:,0:41]
-        Y = array[:,41]
+        X,Y = create_dataframe()
         obj = reliefF()
         obj.fit_transform(X, Y)
-        print("#################")
-        
+        print("#################")      
     else:
         print("Invalid selection")
+
+    print("####Classification####")
+    print("1 - Naive Bayes ")
+    clx_selection = input("Enter your selection: ")
+    if(selection == 3 and clx_selection == 1):
+        naive_bayes(sorted_chi2_list)
+    
     
 main()
     
