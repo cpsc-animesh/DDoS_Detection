@@ -1,5 +1,6 @@
 from sklearn.naive_bayes import  GaussianNB
 import pandas
+import numpy as np
 
 filename = 'kddcup.data_10_percent'
 
@@ -12,11 +13,10 @@ feature = ['duration', 'protocol_type', 'service', 'flag','src_bytes','dst_bytes
 dataframe = pandas.read_csv(filename, names=feature)
 packets = dataframe.values
 header_list = dataframe.columns.values
+print(header_list)
+
 selected_features = ['is_host_login','num_outbound_cmds','su_attempted','urgent','num_shells',
                       'land','root_shell','num_failed_logins','num_file_creations','num_access_files','num_root','attack?']
-# selected_features = ['num_access_files', 'su_attempted', 'num_shells', 'is_guest_login', 
-#                      'srv_diff_host_rate', 'dst_host_diff_srv_rate', 'dst_host_rerror_rate', 
-#                      'diff_srv_rate', 'dst_host_srv_diff_host_rate', 'num_file_creations', 'srv_rerror_rate', 'attack?']
 
 df_clax = pandas.DataFrame(columns=selected_features)
 for i in range(len(selected_features)):
@@ -26,11 +26,13 @@ for i in range(len(selected_features)):
 array_clx = df_clax.values
 X = array_clx[:,0:11]
 print(X)
+
 Y = array_clx[:,11]
 print("#################")
 print(Y)
 model = GaussianNB()
 model.fit(X,Y)
+
 list1 = [['1','1','1','1','1','1','1','1','1','1','1'],
          ['0','0','0','0','0','0','0','0','0','0','0']]
 

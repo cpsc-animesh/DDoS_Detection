@@ -12,6 +12,8 @@ from sklearn.neighbors import KDTree
 from sklearn.naive_bayes import  GaussianNB
 import pandas
 import csv,sys
+import random
+import copy
 
 filename = 'kddcup.data_10_percent'
 filename_adj = 'my_file'
@@ -53,7 +55,7 @@ def normalize():
             traffic[i][j] = float(traffic[i][j])
             traffic[i][j] = ((traffic[i][j])-data_min)/(data_max-data_min)
             traffic[i][j] = traffic[i][j] *1000
-    print("Data Normalized")
+    print("Data Normalized\n")
     return traffic
                   
 #Calculates the entropy of the given data set for the target attribute.
@@ -250,41 +252,50 @@ class reliefF(object):
         self.fit(X, y)
         return self.transform(X)
 
+def splitDataset(dataset, splitRatio):
+    trainSize = int(len(dataset) * splitRatio)
+    trainSet = []
+    copy = []
+    copy = dataset.tolist()
+    while(len(trainSet)<trainSize):
+        index = random.randrange(len(copy))
+        trainSet.append(copy.pop(index))
+    return [trainSet, copy]
+
 def naive_bayes(sorted_list):
     selected_features = sorted_list[0:11]
     selected_features.append('attack?')
-    print("Selected Features")
+    print("Selected Features:")
     print(selected_features)
     
     dataframe = pandas.read_csv(filename, names=feature)
-    packets = dataframe.values
+    #packets = dataframe.values
     header_list = dataframe.columns.values
-
+    
     df_clax = pandas.DataFrame(columns=selected_features)
     for i in range(len(selected_features)):
         for j in range(len(header_list)):
             if(header_list[j]==selected_features[i]):
                 df_clax[selected_features[i]] = dataframe[header_list[j]]
     array_clx = df_clax.values
-    X = array_clx[:,0:11]
-    print(X)
-    Y = array_clx[:,11]
-    print("#################")
-    print(Y)
+    trainSet, testSet = splitDataset(array_clx, 0.67)
+    trainSet_part1 = []
+    trainSet_part2 = []
+    for packet in trainSet:
+        trainSet_part1.append(packet[0:11])
+        trainSet_part2.append(packet[11])
+
     model = GaussianNB()
-    model.fit(X,Y)
-    list1 = [['1','1','1','1','1','1','1','1','1','1','1'],
-             ['0','0','0','0','0','0','0','0','0','0','0']]
+    model.fit(trainSet_part1,trainSet_part2)
+    testSet_values = []    
+    for packet in testSet:
+        testSet_values.append(packet[0:11])
     
-    for i in range(0, len(list1)):
-        for j in range(0, len(list1[i])):
-            list1[i][j] = float(list1[i][j])
-    
-    print(list1)
-    predicted = model.predict(list1)
+    predicted = model.predict(testSet_values)
+    print("The predicted values are:")
     print(predicted)
-    
-    df_clax.to_csv('file_clx', ',')
+      
+    #df_clax.to_csv('file_clx', ',')
     
 def create_dataframe():
     dataframe = pandas.read_csv(filename_adj, names=feature)
@@ -294,13 +305,14 @@ def create_dataframe():
     return X,Y
 
 def main():
-    print("Starting application..")
+    print("Starting application..\n")
     traffic = normalize()
     print("1 - Display the entropy list")
     print("2 - Display the information gain list")
     print("3 - Display the chi-squared list")
     print("4 - Display the ReliefF list")
     selection = input("Enter your selection: ")
+    print("\n")
     if(selection == 1):
         ent_list(traffic)
     elif(selection == 2):
@@ -314,8 +326,8 @@ def main():
         print("#################")      
     else:
         print("Invalid selection")
-
-    print("####Classification####")
+    
+    print("\n####Classification####")
     print("1 - Naive Bayes ")
     clx_selection = input("Enter your selection: ")
     if(selection == 3 and clx_selection == 1):
