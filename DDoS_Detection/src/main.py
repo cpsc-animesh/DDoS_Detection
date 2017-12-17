@@ -262,6 +262,13 @@ def splitDataset(dataset, splitRatio):
         trainSet.append(copy.pop(index))
     return [trainSet, copy]
 
+def getAccuracy(testSet, predictions):
+    correct = 0
+    for packet in range(len(testSet)):
+        if testSet[packet][-1] == predictions[packet]:
+            correct += 1
+    return (correct/float(len(testSet))) * 100.0
+    
 def naive_bayes(sorted_list):
     selected_features = sorted_list[0:11]
     selected_features.append('attack?')
@@ -291,10 +298,12 @@ def naive_bayes(sorted_list):
     for packet in testSet:
         testSet_values.append(packet[0:11])
     
-    predicted = model.predict(testSet_values)
-    print("The predicted values are:")
-    print(predicted)
-      
+    
+    predictions = model.predict(testSet_values)
+    print("The predictions values are:")
+    print(predictions)
+    accuracy = getAccuracy(testSet, predictions)
+    print(accuracy)
     #df_clax.to_csv('file_clx', ',')
     
 def create_dataframe():
