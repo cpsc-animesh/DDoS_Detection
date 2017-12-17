@@ -1,4 +1,4 @@
-# DDoS_detection
+# DDoS_Detection
 
 '''
 This repository is to manage the DDoS detection component of my thesis. It includes code various feature selection algorithms and classification
