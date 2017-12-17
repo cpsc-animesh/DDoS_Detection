@@ -214,7 +214,9 @@ class reliefF(object):
         print("The reliefF values are:")
         print(reliefF_dict)
         print("The sorted reliefF values are:")
-        print(sorted(reliefF_dict, key = reliefF_dict.get))
+        sorted_reliefF = sorted(reliefF_dict, key = reliefF_dict.get)
+        print(sorted_reliefF)
+        return sorted_reliefF
         #print(self.feature_scores)
         #print(self.top_features)
     
@@ -249,8 +251,9 @@ class reliefF(object):
             Reduced feature matrix
 
         """
-        self.fit(X, y)
-        return self.transform(X)
+        sorted_reliefF = self.fit(X, y)
+        return sorted_reliefF
+        #return self.transform(X)
 
 def splitDataset(dataset, splitRatio):
     trainSize = int(len(dataset) * splitRatio)
@@ -298,7 +301,6 @@ def naive_bayes(sorted_list):
     for packet in testSet:
         testSet_values.append(packet[0:11])
     
-    
     predictions = model.predict(testSet_values)
     print("The predictions values are:")
     print(predictions)
@@ -331,8 +333,8 @@ def main():
     elif(selection == 4):
         X,Y = create_dataframe()
         obj = reliefF()
-        obj.fit_transform(X, Y)
-        print("#################")      
+        sorted_reliefF = obj.fit_transform(X, Y)
+            
     else:
         print("Invalid selection")
     
@@ -341,6 +343,12 @@ def main():
     clx_selection = input("Enter your selection: ")
     if(selection == 3 and clx_selection == 1):
         naive_bayes(sorted_chi2_list)
+    elif(selection == 2 and clx_selection == 1):
+        naive_bayes(sorted_gain_list)
+    elif(selection == 4 and clx_selection == 1):
+        naive_bayes(sorted_reliefF)
+    else:
+        print("Invalid Selection")
     
     
 main()
