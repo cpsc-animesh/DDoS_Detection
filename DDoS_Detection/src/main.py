@@ -12,6 +12,7 @@ from sklearn.neighbors import KDTree
 from sklearn.naive_bayes import  GaussianNB
 from sklearn import svm
 from sklearn.svm import SVC
+from sklearn import tree
 import pandas
 import csv,sys
 import random
@@ -333,7 +334,6 @@ def svm(sorted_list):
     for packet in trainSet:
         trainSet_part1.append(packet[0:11])
         trainSet_part2.append(packet[11])
-    
     #svm_clf = svm.SVC(kernel='linear', C=1,gamma=1)
     model = SVC()
     model.fit(trainSet_part1, trainSet_part2)
@@ -346,7 +346,42 @@ def svm(sorted_list):
     print(predictions)
     accuracy = getAccuracy(testSet, predictions)
     print(accuracy)
+
+def decision_tree(sorted_list):
+    selected_features = sorted_list[0:11]
+    selected_features.append('attack?')
+    print("Selected Features:")
+    print(selected_features)
     
+    dataframe = pandas.read_csv(filename, names=feature)
+    #packets = dataframe.values
+    header_list = dataframe.columns.values
+    
+    df_clax = pandas.DataFrame(columns=selected_features)
+    for i in range(len(selected_features)):
+        for j in range(len(header_list)):
+            if(header_list[j]==selected_features[i]):
+                df_clax[selected_features[i]] = dataframe[header_list[j]]
+    array_clx = df_clax.values
+    trainSet, testSet = splitDataset(array_clx, 0.67)
+    trainSet_part1 = []
+    trainSet_part2 = []
+    for packet in trainSet:
+        trainSet_part1.append(packet[0:11])
+        trainSet_part2.append(packet[11])
+
+    model = tree.DecisionTreeClassifier()
+    model.fit(trainSet_part1,trainSet_part2)
+    testSet_values = []    
+    for packet in testSet:
+        testSet_values.append(packet[0:11])
+    
+    predictions = model.predict(testSet_values)
+    print("The predictions values are:")
+    print(predictions)
+    accuracy = getAccuracy(testSet, predictions)
+    print(accuracy)
+
 def create_dataframe():
     dataframe = pandas.read_csv(filename_adj, names=feature)
     array = dataframe.values
@@ -380,6 +415,7 @@ def main():
     print("####Classification####")
     print("1 - Naive Bayes ")
     print("2 - SVM")
+    print("3 - Decision Tree")
     clx_selection = input("Enter your selection: ")
     if(selection == 3 and clx_selection == 1):
         naive_bayes(sorted_chi2_list)
@@ -393,6 +429,13 @@ def main():
         svm(sorted_chi2_list)
     elif(selection == 4 and clx_selection == 2):
         svm(sorted_reliefF)
+    elif(selection == 2 and clx_selection == 3):
+        decision_tree(sorted_gain_list)
+    elif(selection == 3 and clx_selection == 3):
+        decision_tree(sorted_chi2_list)
+    elif(selection == 4 and clx_selection == 3):
+        decision_tree(sorted_reliefF)
+    
     else:
         print("Invalid Selection")
     
