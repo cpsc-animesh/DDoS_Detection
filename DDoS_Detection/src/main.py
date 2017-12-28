@@ -17,9 +17,12 @@ from sklearn.naive_bayes import  GaussianNB
 from sklearn import svm
 from sklearn.svm import SVC
 from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
 import pandas
 import csv,sys
 import random
+import xlwt
 
 filename = 'kddcup.data_10_percent'
 filename_adj = 'my_file'
@@ -284,7 +287,7 @@ def naive_bayes(sorted_list, num_features):
     print("Selected Features:")
     print(selected_features)
     
-    dataframe = pandas.read_csv(filename, names=feature)
+    dataframe = pandas.read_csv(filename_adj, names=feature)
     #packets = dataframe.values
     header_list = dataframe.columns.values
     
@@ -312,7 +315,8 @@ def naive_bayes(sorted_list, num_features):
     print(predictions)
     accuracy = getAccuracy(testSet, predictions)
     print(accuracy)
-    df_clax.to_csv('file_clx', ',')
+    return accuracy
+    #df_clax.to_csv('file_clx', ',')
 
 def svm(sorted_list, num_features):
     selected_features = sorted_list[0:num_features]
@@ -320,24 +324,24 @@ def svm(sorted_list, num_features):
     print("Selected Features:")
     print(selected_features)
     
-    dataframe = pandas.read_csv(filename, names=feature)
+    dataframe = pandas.read_csv(filename_adj, names=feature)
     #packets = dataframe.values
     header_list = dataframe.columns.values
-    
     df_clax = pandas.DataFrame(columns=selected_features)
     for i in range(len(selected_features)):
         for j in range(len(header_list)):
             if(header_list[j]==selected_features[i]):
                 df_clax[selected_features[i]] = dataframe[header_list[j]]
     array_clx = df_clax.values
-    trainSet, testSet = splitDataset(array_clx, 0.67)
+   
+    trainSet, testSet = splitDataset(array_clx, 0.02)
     trainSet_part1 = []
     trainSet_part2 = []
     for packet in trainSet:
         trainSet_part1.append(packet[0:num_features])
         trainSet_part2.append(packet[num_features])
-    #svm_clf = svm.SVC(kernel='linear', C=1,gamma=1)
-    model = SVC()
+        
+    model = SVC(kernel='linear', C=0.0001)
     model.fit(trainSet_part1, trainSet_part2)
     
     testSet_values = []
@@ -348,16 +352,15 @@ def svm(sorted_list, num_features):
     print(predictions)
     accuracy = getAccuracy(testSet, predictions)
     print(accuracy)
+    return accuracy
 
-#May have to run this algorithm on less number of features because it often forms a huge tree for more
-#number of features and the program either fails or takes too long to terminate.
 def decision_tree(sorted_list, num_features):
     selected_features = sorted_list[0:num_features]
     selected_features.append('attack?')
     print("Selected Features:")
     print(selected_features)
     
-    dataframe = pandas.read_csv(filename, names=feature)
+    dataframe = pandas.read_csv(filename_adj, names=feature)
     #packets = dataframe.values
     header_list = dataframe.columns.values
     
@@ -381,10 +384,47 @@ def decision_tree(sorted_list, num_features):
         testSet_values.append(packet[0:num_features])
     
     predictions = model.predict(testSet_values)
+    print("The predicted values are:")
+    print(predictions)
+    accuracy = getAccuracy(testSet, predictions)
+    print(accuracy)
+    return accuracy
+
+def randomForest(sorted_list, num_features):
+    selected_features = sorted_list[0:num_features]
+    selected_features.append('attack?')
+    print("Selected Features:")
+    print(selected_features)
+    
+    dataframe = pandas.read_csv(filename_adj, names=feature)
+    #packets = dataframe.values
+    header_list = dataframe.columns.values
+    
+    df_clax = pandas.DataFrame(columns=selected_features)
+    for i in range(len(selected_features)):
+        for j in range(len(header_list)):
+            if(header_list[j]==selected_features[i]):
+                df_clax[selected_features[i]] = dataframe[header_list[j]]
+    array_clx = df_clax.values
+    trainSet, testSet = splitDataset(array_clx, 0.67)
+    trainSet_part1 = []
+    trainSet_part2 = []
+    for packet in trainSet:
+        trainSet_part1.append(packet[0:num_features])
+        trainSet_part2.append(packet[num_features])
+
+    model = RandomForestClassifier(n_estimators=10)
+    model.fit(trainSet_part1,trainSet_part2)
+    testSet_values = []    
+    for packet in testSet:
+        testSet_values.append(packet[0:num_features])
+    
+    predictions = model.predict(testSet_values)
     print("The predictions values are:")
     print(predictions)
     accuracy = getAccuracy(testSet, predictions)
-    print(accuracy)      
+    print(accuracy)
+    return accuracy
 
 def create_dataframe():
     dataframe = pandas.read_csv(filename_adj, names=feature)
@@ -427,45 +467,70 @@ def main():
     print("1 - Naive Bayes ")
     print("2 - SVM")
     print("3 - Decision Tree")
+    print("4 - Random Forest")
     clx_selection = input("Enter your selection: ")
-    
-    for i in range(7, 40):
+    book = xlwt.Workbook(encoding="utf-8")
+    sheet1 = book.add_sheet("Sheet 1")
+    sheet1.write(0, 2, "Accuracy")
+    for i in range(1, 40):
         num_features = i
         print("Number of features selected - ", i)
         if(selection == 2 and clx_selection == 1):
             print("Classifying using Naive Bayes...")
-            naive_bayes(sorted_gain_list, num_features)
+            accuracy = naive_bayes(sorted_gain_list, num_features)
+            sheet1.write(i, 2, accuracy)
         elif(selection == 3 and clx_selection == 1):
             print("Classifying using Naive Bayes...")
-            naive_bayes(sorted_chi2_list, num_features)
+            accuracy = naive_bayes(sorted_chi2_list, num_features)
+            sheet1.write(i, 5, accuracy)
         elif(selection == 4 and clx_selection == 1):
             print("Classifying using Naive Bayes...")
-            naive_bayes(sorted_reliefF_list, num_features)
-        
+            accuracy = naive_bayes(sorted_reliefF_list, num_features)
+            sheet1.write(i, 2, accuracy)
+            
         elif(selection == 2 and clx_selection == 2):
             print("Classifying using SVM...")
-            svm(sorted_gain_list, num_features)
+            accuracy = svm(sorted_gain_list, num_features)
+            sheet1.write(i, 3, accuracy)
         elif(selection == 3 and clx_selection == 2):
             print("Classifying using SVM...")
-            svm(sorted_chi2_list, num_features)
+            accuracy = svm(sorted_chi2_list, num_features)
+            sheet1.write(i, 3, accuracy)
         elif(selection == 4 and clx_selection == 2):
             print("Classifying using SVM...")
-            svm(sorted_reliefF_list, num_features)
+            accuracy = svm(sorted_reliefF_list, num_features)
+            sheet1.write(i, 3, accuracy)
         
         elif(selection == 2 and clx_selection == 3):
             print("Classifying using Decision Trees...")
-            decision_tree(sorted_gain_list, num_features)
+            accuracy = decision_tree(sorted_gain_list, num_features)
+            sheet1.write(i, 3, accuracy)
         elif(selection == 3 and clx_selection == 3):
             print("Classifying using Decision Trees...")
-            decision_tree(sorted_chi2_list, num_features)
+            accuracy = decision_tree(sorted_chi2_list, num_features)
+            sheet1.write(i, 3, accuracy)
         elif(selection == 4 and clx_selection == 3):
             print("Classifying using Decision Trees...")
-            decision_tree(sorted_reliefF_list, num_features)
+            accuracy = decision_tree(sorted_reliefF_list, num_features)
+            sheet1.write(i, 3, accuracy)
+        
+        elif(selection == 2 and clx_selection == 4):
+            print("Classifying using Random Forest...")
+            accuracy = decision_tree(sorted_gain_list, num_features)
+            sheet1.write(i, 6, accuracy)
+        elif(selection == 3 and clx_selection == 4):
+            print("Classifying using Random Forest...")
+            accuracy = decision_tree(sorted_chi2_list, num_features)
+            sheet1.write(i, 6, accuracy)
+        elif(selection == 4 and clx_selection == 4):
+            print("Classifying using Random Forest...")
+            accuracy = decision_tree(sorted_reliefF_list, num_features)
+            sheet1.write(i, 6, accuracy)    
         
         else:
             print("Invalid Selection")
         print("End")
-    
+    book.save("results.xls")
 main()
     
     
