@@ -19,6 +19,8 @@ from sklearn.svm import SVC
 from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import make_classification
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import StratifiedShuffleSplit
 import pandas
 import csv,sys
 import random
@@ -334,16 +336,25 @@ def svm(sorted_list, num_features):
                 df_clax[selected_features[i]] = dataframe[header_list[j]]
     array_clx = df_clax.values
    
-    trainSet, testSet = splitDataset(array_clx, 0.02)
+    trainSet, testSet = splitDataset(array_clx, 0.67)
     trainSet_part1 = []
     trainSet_part2 = []
     for packet in trainSet:
         trainSet_part1.append(packet[0:num_features])
         trainSet_part2.append(packet[num_features])
-        
-    model = SVC(kernel='linear', C=0.0001)
+    '''    
+    model = SVC(kernel='linear', C=0.01, gamma=0.01)
     model.fit(trainSet_part1, trainSet_part2)
+    '''
+    print("Optimizing SVM..")
+    C_range = np.logspace(-1, 10, 1)
+    gamma_range = np.logspace(-1, 10, 1)
+    param_grid = dict(gamma=gamma_range, C=C_range)
+    grid = GridSearchCV(SVC(), param_grid=param_grid)
+    grid.fit(trainSet_part1, trainSet_part2)
+    print("The best parameters are %s with a score of %0.2f" % (grid.best_params_, grid.best_score_))
     
+    '''
     testSet_values = []
     for packet in testSet:
         testSet_values.append(packet[0:num_features])
@@ -352,7 +363,7 @@ def svm(sorted_list, num_features):
     print(predictions)
     accuracy = getAccuracy(testSet, predictions)
     print(accuracy)
-    return accuracy
+    return accuracy'''
 
 def decision_tree(sorted_list, num_features):
     selected_features = sorted_list[0:num_features]
@@ -472,7 +483,7 @@ def main():
     book = xlwt.Workbook(encoding="utf-8")
     sheet1 = book.add_sheet("Sheet 1")
     sheet1.write(0, 2, "Accuracy")
-    for i in range(1, 40):
+    for i in range(3, 5):#1-40
         num_features = i
         print("Number of features selected - ", i)
         if(selection == 2 and clx_selection == 1):
