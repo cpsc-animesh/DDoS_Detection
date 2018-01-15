@@ -2,7 +2,7 @@ import pandas
 import csv,sys
 # from StdSuites.Table_Suite import row
 
-filename = 'kddcup.data_10_percent'
+filename = 'kddcup.data_10_percent'#
 
 feature = ['duration', 'protocol_type', 'service', 'flag','src_bytes','dst_bytes','land','wrong_fragment','urgent','hot' ,'num_failed_logins'
 ,'logged_in','num_compromised','root_shell','su_attempted','num_root','num_file_creations','num_shells','num_access_files','num_outbound_cmds','is_host_login'
@@ -10,6 +10,7 @@ feature = ['duration', 'protocol_type', 'service', 'flag','src_bytes','dst_bytes
 ,'dst_host_count','dst_host_srv_count','dst_host_same_srv_rate','dst_host_diff_srv_rate','dst_host_same_src_port_rate','dst_host_srv_diff_host_rate'
 ,'dst_host_serror_rate','dst_host_srv_serror_rate','dst_host_rerror_rate','dst_host_srv_rerror_rate', 'attack?']
 
+#Return the distinct values in a column
 def find_distinct(attr):
     output = []
     for i in attr:
@@ -19,7 +20,8 @@ def find_distinct(attr):
 
 dataframe = pandas.read_csv(filename, names=feature)
 array = dataframe.values
-             
+
+#Converting the categorical variables in row 1, 2 and 3 to numeric data         
 for i in range(1,4):
     Y = array[:,i]
     result = find_distinct(dataframe.iloc[:,i]) 
@@ -32,8 +34,9 @@ for i in range(1,4):
         num = num+1
     print(Y)
     array[:,i] = Y
-    print("##################")
-print(array[116790])
-dataframe2 = pandas.DataFrame(array)
-dataframe2.to_csv('my_file')
+
+#Converting the class variable to either attack or normal values. Different attack names are changed to 'attack'
+for i in range(len(array)):
+    if array[i,41]!='normal.':
+        array[i,41] = 'attack.'
 
