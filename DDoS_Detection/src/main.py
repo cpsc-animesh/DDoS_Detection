@@ -26,6 +26,7 @@ import pandas
 import csv,sys
 import random
 import xlwt
+from KDDDataCleaning import array
 
 filename = 'kddcup.data_10_percent'
 filename_adj = 'my_file'
@@ -300,6 +301,7 @@ def naive_bayes(sorted_list, num_features):
             if(header_list[j]==selected_features[i]):
                 df_clax[selected_features[i]] = dataframe[header_list[j]]
     array_clx = df_clax.values
+    array_clx = array_clx[1:]
     trainSet, testSet = splitDataset(array_clx, 0.67)
     trainSet_part1 = []
     trainSet_part2 = []
@@ -336,7 +338,7 @@ def svm(sorted_list, num_features):
             if(header_list[j]==selected_features[i]):
                 df_clax[selected_features[i]] = dataframe[header_list[j]]
     array_clx = df_clax.values
-   
+    array_clx = array_clx[1:]
     trainSet, testSet = splitDataset(array_clx, 0.67)
     trainSet_part1 = []
     trainSet_part2 = []
@@ -379,6 +381,7 @@ def decision_tree(sorted_list, num_features):
             if(header_list[j]==selected_features[i]):
                 df_clax[selected_features[i]] = dataframe[header_list[j]]
     array_clx = df_clax.values
+    array_clx = array_clx[1:]
     trainSet, testSet = splitDataset(array_clx, 0.67)
     trainSet_part1 = []
     trainSet_part2 = []
@@ -415,6 +418,7 @@ def randomForest(sorted_list, num_features):
             if(header_list[j]==selected_features[i]):
                 df_clax[selected_features[i]] = dataframe[header_list[j]]
     array_clx = df_clax.values
+    array_clx = array_clx[1:]
     trainSet, testSet = splitDataset(array_clx, 0.67)
     trainSet_part1 = []
     trainSet_part2 = []
@@ -481,7 +485,7 @@ def main():
     book = xlwt.Workbook(encoding="utf-8")
     sheet1 = book.add_sheet("Sheet 1")
     sheet1.write(0, 2, "Accuracy")
-    for i in range(25,26):#1-40
+    for i in range(1,40):#1-40
         num_features = i
         print("Number of features selected - ", i)
         if(selection == 2 and clx_selection == 1):
