@@ -19,6 +19,7 @@ def find_distinct(attr):
     return output
 
 dataframe = pandas.read_csv(filename, names=feature)
+dataframe = dataframe.drop(dataframe.columns[[10,11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,22]], axis=1)
 array = dataframe.values
 
 #Converting the categorical variables in row 1, 2 and 3 to numeric data         
@@ -37,6 +38,10 @@ for i in range(1,4):
 
 #Converting the class variable to either attack or normal values. Different attack names are changed to 'attack'
 for i in range(len(array)):
-    if array[i,41]!='normal.':
-        array[i,41] = 'attack.'
+    if array[i,28]!='normal.':
+        array[i,28] = 'attack.'
+
+dataframe2 = pandas.DataFrame(array)
+dataframe2.to_csv('my_file')
+
 

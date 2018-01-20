@@ -26,14 +26,11 @@ import pandas
 import csv,sys
 import random
 import xlwt
-from KDDDataCleaning import array
 
 filename = 'kddcup.data_10_percent'
 filename_adj = 'my_file'
 
-feature = ['duration', 'protocol_type', 'service', 'flag','src_bytes','dst_bytes','land','wrong_fragment','urgent','hot' ,'num_failed_logins'
-,'logged_in','num_compromised','root_shell','su_attempted','num_root','num_file_creations','num_shells','num_access_files','num_outbound_cmds','is_host_login'
-,'is_guest_login','count','srv_count','serror_rate','srv_serror_rate','rerror_rate','srv_rerror_rate','same_srv_rate','diff_srv_rate','srv_diff_host_rate'
+feature = ['duration', 'protocol_type', 'service', 'flag','src_bytes','dst_bytes','land','wrong_fragment','urgent','count','srv_count','serror_rate','srv_serror_rate','rerror_rate','srv_rerror_rate','same_srv_rate','diff_srv_rate','srv_diff_host_rate'
 ,'dst_host_count','dst_host_srv_count','dst_host_same_srv_rate','dst_host_diff_srv_rate','dst_host_same_src_port_rate','dst_host_srv_diff_host_rate'
 ,'dst_host_serror_rate','dst_host_srv_serror_rate','dst_host_rerror_rate','dst_host_srv_rerror_rate', 'attack?']
 total_features = (len(feature)-1)
@@ -56,7 +53,7 @@ def normalize():
     data_min = 0
     data_max = 0
     for i in range(0, len(traffic)):
-        for j in range(0,41):
+        for j in range(0,28):
             traffic[i][j] = float(traffic[i][j])
             if(traffic[i][j]<=data_min):
                 data_min = traffic[i][j]
@@ -64,7 +61,7 @@ def normalize():
                 data_max = traffic[i][j]
 
     for i in range(0, len(traffic)):
-        for j in range(0,41):
+        for j in range(0,28):
             traffic[i][j] = float(traffic[i][j])
             traffic[i][j] = ((traffic[i][j])-data_min)/(data_max-data_min)
             traffic[i][j] = traffic[i][j] *1000
@@ -122,7 +119,7 @@ def ent_list(traffic):
 def ig_list(traffic):
     gain_list=list()
     for j in range(total_features):
-        gain_list.append(gain(traffic, j, 41))
+        gain_list.append(gain(traffic, j, 28))
     gain_dict = dict(zip(feature, gain_list))
     print("The Information Gain values are:")
     print(gain_dict)
@@ -134,11 +131,11 @@ def ig_list(traffic):
 def chi2_list():
     dataframe = pandas.read_csv(filename_adj, names=feature)
     #array = dataframe.values
-    #X = dataframe.iloc[:,0:41]
-    #Y = dataframe.iloc[:,41]
+    #X = dataframe.iloc[:,0:28]
+    #Y = dataframe.iloc[:,28]
     array = dataframe.values
-    X = array[:,0:41]
-    Y = array[:,41]
+    X = array[:,0:28]
+    Y = array[:,28]
     # feature extraction
     test = SelectKBest(score_func=chi2, k=10)
     fit = test.fit(X,Y)
@@ -199,7 +196,7 @@ class reliefF(object):
         None
 
         """
-        self.feature_scores = np.zeros(41)
+        self.feature_scores = np.zeros(28)
         self.tree = KDTree(X)
         #The shape attribute for numpy arrays returns the dimensions of the array. 
         #If Y has n rows and m columns, then Y.shape is (n,m). So Y.shape[0] is n
@@ -442,8 +439,8 @@ def randomForest(sorted_list, num_features):
 def create_dataframe():
     dataframe = pandas.read_csv(filename_adj, names=feature)
     array = dataframe.values
-    X = array[:,0:41]
-    Y = array[:,41]
+    X = array[:,0:28]
+    Y = array[:,28]
     return X,Y
 
 def main():
@@ -458,18 +455,18 @@ def main():
     if(selection == 1):
         ent_list(traffic)
     elif(selection == 2):
-        #sorted_gain_list = ig_list(traffic)
-        sorted_gain_list = ['is_host_login', 'num_outbound_cmds', 'su_attempted', 'urgent', 'num_shells', 'land', 'root_shell', 'num_failed_logins', 'num_file_creations', 'num_access_files', 'num_root', 'is_guest_login', 'wrong_fragment', 'num_compromised', 'hot', 'duration', 'srv_rerror_rate', 'rerror_rate', 'dst_host_srv_rerror_rate', 'dst_host_rerror_rate', 'srv_diff_host_rate', 'dst_host_srv_diff_host_rate', 'dst_host_count', 'logged_in', 'srv_serror_rate', 'dst_host_srv_serror_rate', 'serror_rate', 'dst_host_serror_rate', 'dst_bytes', 'flag', 'same_srv_rate', 'diff_srv_rate', 'dst_host_same_srv_rate', 'dst_host_diff_srv_rate', 'dst_host_srv_count', 'protocol_type', 'dst_host_same_src_port_rate', 'srv_count', 'service', 'count', 'src_bytes']
+        sorted_gain_list = ig_list(traffic)
+        #sorted_gain_list = ['is_host_login', 'num_outbound_cmds', 'su_attempted', 'urgent', 'num_shells', 'land', 'root_shell', 'num_failed_logins', 'num_file_creations', 'num_access_files', 'num_root', 'is_guest_login', 'wrong_fragment', 'num_compromised', 'hot', 'duration', 'srv_rerror_rate', 'rerror_rate', 'dst_host_srv_rerror_rate', 'dst_host_rerror_rate', 'srv_diff_host_rate', 'dst_host_srv_diff_host_rate', 'dst_host_count', 'logged_in', 'srv_serror_rate', 'dst_host_srv_serror_rate', 'serror_rate', 'dst_host_serror_rate', 'dst_bytes', 'flag', 'same_srv_rate', 'diff_srv_rate', 'dst_host_same_srv_rate', 'dst_host_diff_srv_rate', 'dst_host_srv_count', 'protocol_type', 'dst_host_same_src_port_rate', 'srv_count', 'service', 'count', 'src_bytes']
         print("Features selected using Information Gain.")
     elif(selection == 3):
-        #sorted_chi2_list = chi2_list()
-        sorted_chi2_list = ['num_access_files', 'su_attempted', 'num_shells', 'is_guest_login', 'srv_diff_host_rate', 'dst_host_diff_srv_rate', 'dst_host_rerror_rate', 'diff_srv_rate', 'dst_host_srv_diff_host_rate', 'num_file_creations', 'srv_rerror_rate', 'dst_host_srv_rerror_rate', 'rerror_rate', 'urgent', 'same_srv_rate', 'dst_host_same_srv_rate', 'num_root', 'dst_host_same_src_port_rate', 'root_shell', 'protocol_type', 'num_compromised', 'logged_in', 'dst_host_serror_rate', 'serror_rate', 'srv_serror_rate', 'dst_host_srv_serror_rate', 'num_failed_logins', 'land', 'service', 'flag', 'wrong_fragment', 'hot', 'dst_host_count', 'dst_host_srv_count', 'count', 'srv_count', 'duration', 'src_bytes', 'is_host_login', 'num_outbound_cmds', 'dst_bytes']
+        sorted_chi2_list = chi2_list()
+        #sorted_chi2_list = ['num_access_files', 'su_attempted', 'num_shells', 'is_guest_login', 'srv_diff_host_rate', 'dst_host_diff_srv_rate', 'dst_host_rerror_rate', 'diff_srv_rate', 'dst_host_srv_diff_host_rate', 'num_file_creations', 'srv_rerror_rate', 'dst_host_srv_rerror_rate', 'rerror_rate', 'urgent', 'same_srv_rate', 'dst_host_same_srv_rate', 'num_root', 'dst_host_same_src_port_rate', 'root_shell', 'protocol_type', 'num_compromised', 'logged_in', 'dst_host_serror_rate', 'serror_rate', 'srv_serror_rate', 'dst_host_srv_serror_rate', 'num_failed_logins', 'land', 'service', 'flag', 'wrong_fragment', 'hot', 'dst_host_count', 'dst_host_srv_count', 'count', 'srv_count', 'duration', 'src_bytes', 'is_host_login', 'num_outbound_cmds', 'dst_bytes']
         print("Features selected using Chi-squared.")
     elif(selection == 4):
-#         X,Y = create_dataframe()
-#         obj = reliefF()
-#         sorted_reliefF_list = obj.fit_transform(X, Y)
-        sorted_reliefF_list = ['srv_count', 'count', 'src_bytes', 'dst_host_diff_srv_rate', 'dst_bytes', 'dst_host_count', 'dst_host_srv_count', 'srv_diff_host_rate', 'dst_host_srv_diff_host_rate', 'dst_host_same_src_port_rate', 'diff_srv_rate', 'dst_host_same_srv_rate', 'same_srv_rate', 'dst_host_srv_rerror_rate', 'duration', 'dst_host_srv_serror_rate', 'dst_host_rerror_rate', 'dst_host_serror_rate', 'service', 'serror_rate', 'srv_serror_rate', 'srv_rerror_rate', 'rerror_rate', 'logged_in', 'flag', 'hot', 'num_root', 'num_file_creations', 'num_access_files', 'num_compromised', 'num_shells', 'root_shell', 'su_attempted', 'protocol_type', 'num_failed_logins', 'is_host_login', 'num_outbound_cmds', 'urgent', 'is_guest_login', 'land', 'wrong_fragment']     
+        X,Y = create_dataframe()
+        obj = reliefF()
+        sorted_reliefF_list = obj.fit_transform(X, Y)
+        #sorted_reliefF_list = ['srv_count', 'count', 'src_bytes', 'dst_host_diff_srv_rate', 'dst_bytes', 'dst_host_count', 'dst_host_srv_count', 'srv_diff_host_rate', 'dst_host_srv_diff_host_rate', 'dst_host_same_src_port_rate', 'diff_srv_rate', 'dst_host_same_srv_rate', 'same_srv_rate', 'dst_host_srv_rerror_rate', 'duration', 'dst_host_srv_serror_rate', 'dst_host_rerror_rate', 'dst_host_serror_rate', 'service', 'serror_rate', 'srv_serror_rate', 'srv_rerror_rate', 'rerror_rate', 'logged_in', 'flag', 'hot', 'num_root', 'num_file_creations', 'num_access_files', 'num_compromised', 'num_shells', 'root_shell', 'su_attempted', 'protocol_type', 'num_failed_logins', 'is_host_login', 'num_outbound_cmds', 'urgent', 'is_guest_login', 'land', 'wrong_fragment']     
         print("Features selected using reliefF.")
     else:
         print("Invalid selection")
@@ -485,7 +482,7 @@ def main():
     book = xlwt.Workbook(encoding="utf-8")
     sheet1 = book.add_sheet("Sheet 1")
     sheet1.write(0, 2, "Accuracy")
-    for i in range(1,40):#1-40
+    for i in range(1,29):
         num_features = i
         print("Number of features selected - ", i)
         if(selection == 2 and clx_selection == 1):
