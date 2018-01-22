@@ -28,7 +28,8 @@ import random
 import xlwt
 
 filename = 'kddcup.data_10_percent'
-filename_adj = 'my_file'
+filename_adj = 'chopped_my_file'
+#filename_adj = 'my_file'
 
 feature = ['duration', 'protocol_type', 'service', 'flag','src_bytes','dst_bytes','land','wrong_fragment','urgent','count','srv_count','serror_rate','srv_serror_rate','rerror_rate','srv_rerror_rate','same_srv_rate','diff_srv_rate','srv_diff_host_rate'
 ,'dst_host_count','dst_host_srv_count','dst_host_same_srv_rate','dst_host_diff_srv_rate','dst_host_same_src_port_rate','dst_host_srv_diff_host_rate'
@@ -455,18 +456,18 @@ def main():
     if(selection == 1):
         ent_list(traffic)
     elif(selection == 2):
-        sorted_gain_list = ig_list(traffic)
-        #sorted_gain_list = ['is_host_login', 'num_outbound_cmds', 'su_attempted', 'urgent', 'num_shells', 'land', 'root_shell', 'num_failed_logins', 'num_file_creations', 'num_access_files', 'num_root', 'is_guest_login', 'wrong_fragment', 'num_compromised', 'hot', 'duration', 'srv_rerror_rate', 'rerror_rate', 'dst_host_srv_rerror_rate', 'dst_host_rerror_rate', 'srv_diff_host_rate', 'dst_host_srv_diff_host_rate', 'dst_host_count', 'logged_in', 'srv_serror_rate', 'dst_host_srv_serror_rate', 'serror_rate', 'dst_host_serror_rate', 'dst_bytes', 'flag', 'same_srv_rate', 'diff_srv_rate', 'dst_host_same_srv_rate', 'dst_host_diff_srv_rate', 'dst_host_srv_count', 'protocol_type', 'dst_host_same_src_port_rate', 'srv_count', 'service', 'count', 'src_bytes']
+        #sorted_gain_list = ig_list(traffic)
+        sorted_gain_list = ['land', 'urgent', 'wrong_fragment', 'rerror_rate', 'srv_rerror_rate', 'count', 'dst_host_rerror_rate', 'dst_host_srv_rerror_rate', 'duration', 'flag', 'serror_rate', 'srv_serror_rate', 'dst_host_serror_rate', 'dst_host_srv_serror_rate', 'diff_srv_rate', 'same_srv_rate', 'dst_host_same_srv_rate', 'srv_diff_host_rate', 'dst_host_diff_srv_rate', 'dst_host_srv_count', 'dst_host_srv_diff_host_rate', 'dst_host_count', 'protocol_type', 'srv_count', 'dst_host_same_src_port_rate', 'dst_bytes', 'service', 'src_bytes']
         print("Features selected using Information Gain.")
     elif(selection == 3):
-        sorted_chi2_list = chi2_list()
-        #sorted_chi2_list = ['num_access_files', 'su_attempted', 'num_shells', 'is_guest_login', 'srv_diff_host_rate', 'dst_host_diff_srv_rate', 'dst_host_rerror_rate', 'diff_srv_rate', 'dst_host_srv_diff_host_rate', 'num_file_creations', 'srv_rerror_rate', 'dst_host_srv_rerror_rate', 'rerror_rate', 'urgent', 'same_srv_rate', 'dst_host_same_srv_rate', 'num_root', 'dst_host_same_src_port_rate', 'root_shell', 'protocol_type', 'num_compromised', 'logged_in', 'dst_host_serror_rate', 'serror_rate', 'srv_serror_rate', 'dst_host_srv_serror_rate', 'num_failed_logins', 'land', 'service', 'flag', 'wrong_fragment', 'hot', 'dst_host_count', 'dst_host_srv_count', 'count', 'srv_count', 'duration', 'src_bytes', 'is_host_login', 'num_outbound_cmds', 'dst_bytes']
+        #sorted_chi2_list = chi2_list()
         print("Features selected using Chi-squared.")
+        sorted_chi2_list  = ['dst_host_same_srv_rate', 'count', 'rerror_rate', 'srv_rerror_rate', 'same_srv_rate', 'wrong_fragment', 'dst_host_rerror_rate', 'diff_srv_rate', 'dst_host_srv_rerror_rate', 'dst_host_diff_srv_rate', 'serror_rate', 'srv_serror_rate', 'dst_host_serror_rate', 'dst_host_srv_serror_rate', 'flag', 'dst_host_same_src_port_rate', 'protocol_type', 'srv_diff_host_rate', 'dst_host_srv_diff_host_rate', 'dst_host_srv_count', 'service', 'land', 'urgent', 'dst_host_count', 'srv_count', 'duration', 'src_bytes', 'dst_bytes']
     elif(selection == 4):
-        X,Y = create_dataframe()
-        obj = reliefF()
-        sorted_reliefF_list = obj.fit_transform(X, Y)
-        #sorted_reliefF_list = ['srv_count', 'count', 'src_bytes', 'dst_host_diff_srv_rate', 'dst_bytes', 'dst_host_count', 'dst_host_srv_count', 'srv_diff_host_rate', 'dst_host_srv_diff_host_rate', 'dst_host_same_src_port_rate', 'diff_srv_rate', 'dst_host_same_srv_rate', 'same_srv_rate', 'dst_host_srv_rerror_rate', 'duration', 'dst_host_srv_serror_rate', 'dst_host_rerror_rate', 'dst_host_serror_rate', 'service', 'serror_rate', 'srv_serror_rate', 'srv_rerror_rate', 'rerror_rate', 'logged_in', 'flag', 'hot', 'num_root', 'num_file_creations', 'num_access_files', 'num_compromised', 'num_shells', 'root_shell', 'su_attempted', 'protocol_type', 'num_failed_logins', 'is_host_login', 'num_outbound_cmds', 'urgent', 'is_guest_login', 'land', 'wrong_fragment']     
+        #X,Y = create_dataframe()
+        #obj = reliefF()
+        #sorted_reliefF_list = obj.fit_transform(X, Y)
+        sorted_reliefF_list = ['srv_count', 'src_bytes', 'dst_bytes', 'dst_host_count', 'srv_diff_host_rate', 'dst_host_srv_diff_host_rate', 'dst_host_same_src_port_rate', 'dst_host_srv_count', 'dst_host_diff_srv_rate', 'dst_host_same_srv_rate', 'same_srv_rate', 'diff_srv_rate', 'duration', 'dst_host_srv_rerror_rate', 'dst_host_rerror_rate', 'dst_host_srv_serror_rate', 'dst_host_serror_rate', 'service', 'serror_rate', 'srv_serror_rate', 'srv_rerror_rate', 'rerror_rate', 'flag', 'count', 'protocol_type', 'land', 'urgent', 'wrong_fragment']
         print("Features selected using reliefF.")
     else:
         print("Invalid selection")

@@ -41,7 +41,15 @@ for i in range(len(array)):
     if array[i,28]!='normal.':
         array[i,28] = 'attack.'
 
+chopped_array = []
+for i in range(0,20001):
+    chopped_array.append(array[i])
+print(chopped_array[0])
+
 dataframe2 = pandas.DataFrame(array)
 dataframe2.to_csv('my_file')
+
+chopped_df = pandas.DataFrame(chopped_array)
+chopped_df.to_csv('chopped_my_file')
 
 
