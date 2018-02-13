@@ -46,7 +46,7 @@ def clean_data(filename, feature):
                 array[i,28] = 'attack.'
     
         chopped_array = []
-        for i in range(0,20001):
+        for i in range(0,10001):
             chopped_array.append(array[i])
         print(chopped_array[0])
         
