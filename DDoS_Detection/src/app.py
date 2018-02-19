@@ -5,44 +5,71 @@ Created on Feb 12, 2018
 '''
 
 import Tkinter as tk
-from main import *
+import pygubu
 
-root = tk.Tk()
-root.resizable(width=False, height=False)
+class Application:
+    def __init__(self, master):
+        self.master = master
+        self.builder = builder = pygubu.Builder()
+        builder.add_from_file('/home/animesh/Desktop/mainapp.ui')
+        self.mainwindow = builder.get_object('mainWindow', master)
+        
+        #Set main menu for Feature Selection
+        self.mainmenu = menu = builder.get_object('mainmenu', self.master)
+        #self.set_menu(menu)
+        
+        #Set main menu for Classification
+        self.mainmenuclx = menu = builder.get_object('mainmenuclx', self.master)
+        
+        builder.connect_callbacks(self)
+    
+    FS_selected = 0
+    clx_selected = 0
+    
+    def IG_submenu_clicked(self, itemid):
+        if itemid == 'IG_submenu':
+            FS_selected = itemid
+            print("Hello from IG")
 
-frame1 = tk.Frame(width=300, height=576, bg="", colormap="new")
-frame1.pack()
-FSlabel = tk.Label(frame1, text="Feature Selection: ").pack(side = 'left')
-#Drop down menu for feature selection
-variable = tk.StringVar(root)
-variable.set("Information Gain") # default value
-w = tk.OptionMenu(frame1, variable, "Information Gain", "Chi Squared", "ReliefF")
-w.pack()
-FSRlabel = tk.Label(frame1, text="Recommended: ReliefF").pack(side = 'left')
+    def chi2_submenu_clicked(self, itemid):
+        if itemid == 'chi2_submenu':
+            FS_selected = itemid
+            print("Hello from chi2")
+            
+    def reliefF_submenu_clicked(self, itemid):
+        if itemid == 'reliefF_submenu':
+            FS_selected = itemid
+            print("Hello from reliefF")
 
-clxlabel = tk.Label(frame1, text="Classification: ").pack(side = 'left')
-#Drop down menu for feature selection
-variable = tk.StringVar(root)
-variable.set("Information Gain") # default value
-w = tk.OptionMenu(frame1, variable, "Naive Bayes", "SVM", "Decision Trees", "Random Forest")
-w.pack()
-clxRlabel = tk.Label(frame1, text="Recommended: Decision Tree").pack(side = 'left')
+    def naivebayes_submenu_clicked(self, itemid):
+        if itemid == 'NaiveBayes_submenu':
+            clx_selected = itemid
+            print("Hello from Naive Bayes")
+            
+    def SVM_submenu_clicked(self, itemid):
+        if itemid == 'SVM_submenu':
+            clx_selected = itemid
+            print("Hello from SVM")
+            
+    def decisionTree_submenu_clicked(self, itemid):
+        if itemid == 'DecisionTree_submenu':
+            clx_selected = itemid
+            print("Hello from Decision Tree")
+            
+    def RandomForest_submenu_clicked(self, itemid):
+        if itemid == 'RandomForest_submenu':
+            clx_selected = itemid
+            print("Hello from Random Forest")       
 
-def callback():
-    print "click!"
-    main()
+    def detectButton_click(self):
+        self.master.quit()
+    
+    
 
-b = tk.Button(frame1, text="Detect", command=callback)
-b.pack()
+if __name__== '__main__':
+    root = tk.Tk()
+    root.title('DDoS Detect')
+    app = Application(root)
+    
+    root.mainloop()
 
-
-
-
-
-
-
-
-frame2 = tk.Frame(width=300, height=576, bg="", colormap="new")
-frame2.pack()
-
-root.mainloop()
