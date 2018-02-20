@@ -4,77 +4,90 @@ Created on Jan 23, 2018
 @author: animesh
 '''
 
-#from main.py import *
-from DataCleaning import clean_data
-from main import randomForest, normalize
+'''
+This file continously reads from a rolling window of live network packets and filters out the features based on the selected
+feature selection algorithm and applies the selected classification algorithm to return the prediction with an accuracy
+percentage
+'''
+
+import csv,sys
 import pandas
-import random
-from sklearn.ensemble import RandomForestClassifier
-import csv
 
-'''
-This file continously reads from a rolling window of live network packets and filters out the features based on ReliefF
-and applies decision tree classification to return the status of every packet\
-'''
-filename_adj = 'chopped_my_file'
-filename = 'realdata.csv'
-feature = ['duration', 'protocol_type', 'service', 'flag','src_bytes','dst_bytes','land','wrong_fragment','urgent','count','srv_count','serror_rate','srv_serror_rate','rerror_rate','srv_rerror_rate','same_srv_rate','diff_srv_rate','srv_diff_host_rate'
-           ,'dst_host_count','dst_host_srv_count','dst_host_same_srv_rate','dst_host_diff_srv_rate','dst_host_same_src_port_rate','dst_host_srv_diff_host_rate'
-           ,'dst_host_serror_rate','dst_host_srv_serror_rate','dst_host_rerror_rate','dst_host_srv_rerror_rate', 'attack?']
+window_size = 100
 
-sorted_chi2_list  = ['dst_host_same_srv_rate', 'count', 'rerror_rate', 'srv_rerror_rate', 'same_srv_rate', 'wrong_fragment', 'dst_host_rerror_rate', 'diff_srv_rate', 'dst_host_srv_rerror_rate', 'dst_host_diff_srv_rate', 'serror_rate', 'srv_serror_rate', 'dst_host_serror_rate', 'dst_host_srv_serror_rate', 'flag', 'dst_host_same_src_port_rate', 'protocol_type', 'srv_diff_host_rate', 'dst_host_srv_diff_host_rate', 'dst_host_srv_count', 'service', 'land', 'urgent', 'dst_host_count', 'srv_count', 'duration', 'src_bytes', 'dst_bytes']
-  
-clean_data(filename, feature)
-normalize('real_data_cleaned')
 
-def splitDataset(dataset, splitRatio):
-    trainSize = int(len(dataset) * splitRatio)
-    trainSet = []
-    copy = []
-    copy = dataset.tolist()
-    while(len(trainSet)<trainSize):
-        index = random.randrange(len(copy))
-        trainSet.append(copy.pop(index))
-    return [trainSet, copy]
+file_to_read = '/home/animesh/Documents/kdd99_feature_extractor-master/build/src/dump.csv'
 
-def randomForest(sorted_list, num_features):
-    selected_features = sorted_list[0:num_features]
-    selected_features.append('attack?')
-    print("Selected Features:")
-    print(selected_features)
+def normalize_window(cleaned_window):
+    traffic = cleaned_window
+    data_min = 0
+    data_max = 0
+    for i in range(0, len(traffic)):
+        for j in range(0,28):
+            traffic[i][j] = float(traffic[i][j])
+            if(traffic[i][j]<=data_min):
+                data_min = traffic[i][j]
+            if(traffic[i][j]>data_max):
+                data_max = traffic[i][j]
+
+    for i in range(0, len(traffic)):
+        for j in range(0,28):
+            traffic[i][j] = float(traffic[i][j])
+            traffic[i][j] = ((traffic[i][j])-data_min)/(data_max-data_min)
+            traffic[i][j] = traffic[i][j] *1000
+    return traffic
     
-    dataframe = pandas.read_csv(filename_adj, names=feature)
-    #packets = dataframe.values
-    header_list = dataframe.columns.values
-    
-    df_clax = pandas.DataFrame(columns=selected_features)
-    for i in range(len(selected_features)):
-        for j in range(len(header_list)):
-            if(header_list[j]==selected_features[i]):
-                df_clax[selected_features[i]] = dataframe[header_list[j]]
-    array_clx = df_clax.values
-    array_clx = array_clx[1:]
-    trainSet, testSet = splitDataset(array_clx, 0.67)
-    trainSet_part1 = []
-    trainSet_part2 = []
-    for packet in trainSet:
-        trainSet_part1.append(packet[0:num_features])
-        trainSet_part2.append(packet[num_features])
+def find_distinct(attr):
+    output = []
+    for i in attr:
+        if i not in output:
+            output.append(i)
+    return output
 
-    model = RandomForestClassifier(n_estimators=10)
-    model.fit(trainSet_part1,trainSet_part2)
-    with open('real_data_cleaned', 'r') as f:
-        file = csv.reader(f)
-        testSet_values = []
-        for packet in file:
-            testSet_values.append(packet)
-   
-    predictions = model.predict(testSet_values)
-    print("The predictions values are:")
-    print(predictions)
-    accuracy = getAccuracy(testSet, predictions)
-    print(accuracy)
-    return accuracy
+def clean_window(window):
+    dataframe = pandas.DataFrame(window)
+    array = dataframe.values
+#     print(len(array[0]))
+#     print(array[0])
+    for i in range(1,4):
+        Y = array[:,i]
+        result = find_distinct(dataframe.iloc[:,i]) 
+#         print("Distinct values in column",i,"are:")
+#         print(result)
+        num = 1
+        for item in result:
+            for k in range(len(Y)):
+                if(Y[k]==item):
+                    Y[k] = num
+            num = num+1
+#         print("Y:")
+#         print(Y)
+        array[:,i] = Y
+    return array
 
-randomForest(sorted_chi2_list, 16)
+def create_window(read_file, iter_no):
+    window = []
+    lines_to_skip = 100*iter_no
+    read_file = read_file.readlines()[lines_to_skip:]
+    for packet in read_file:
+        if(len(window) == 100):
+            break
+        else:
+            window.append(packet)
+    print(window[0])
+    cleaned_window = clean_window(window)
+    normalized_window = normalize_window(cleaned_window)
+    return normalized_window
+            
+#Dynamically read the newest 100 enteries from the real_data csv file, normalize it and store it in a dataset
+def main():
+    #Read the csv and pass it to the create_window function to create a window of 100 packets
+    for i in range(1):
+        with open(file_to_read, 'r') as f:
+            read_file = csv.reader(f)
+            created_window = create_window(read_file,0)
+            #Now get the selected FS and Classification algorithm from the GUI and classify this window
+            
 
+if __name__ == "__main__":
+    main()

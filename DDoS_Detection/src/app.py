@@ -7,6 +7,8 @@ Created on Feb 12, 2018
 import Tkinter as tk
 import pygubu
 
+FS_selected = 0
+clx_selected = 0
 class Application:
     def __init__(self, master):
         self.master = master
@@ -23,12 +25,12 @@ class Application:
         
         builder.connect_callbacks(self)
     
-    FS_selected = 0
-    clx_selected = 0
+
     
     def IG_submenu_clicked(self, itemid):
         if itemid == 'IG_submenu':
             FS_selected = itemid
+            return FS_selected
             print("Hello from IG")
 
     def chi2_submenu_clicked(self, itemid):
@@ -60,8 +62,8 @@ class Application:
         if itemid == 'RandomForest_submenu':
             clx_selected = itemid
             print("Hello from Random Forest")       
-
-    def detectButton_click(self):
+    
+    def detectButton_clicked(self):
         self.master.quit()
     
     
