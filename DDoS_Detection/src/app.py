@@ -25,8 +25,6 @@ class Application:
         
         builder.connect_callbacks(self)
     
-
-    
     def IG_submenu_clicked(self, itemid):
         if itemid == 'IG_submenu':
             FS_selected = itemid

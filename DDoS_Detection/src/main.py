@@ -38,6 +38,9 @@ feature = ['duration', 'protocol_type', 'service', 'flag','src_bytes','dst_bytes
 ,'dst_host_serror_rate','dst_host_srv_serror_rate','dst_host_rerror_rate','dst_host_srv_rerror_rate', 'attack?']
 total_features = (len(feature)-1)
 
+def hello():
+    print("Its a hello from Main")
+
 #Open the adjusted KDD dataset set and store it in a 2D list and normalize the list
 def normalize(file_to_normalize):
     print("Normalizing data..")
