@@ -1,6 +1,5 @@
 '''
 Created on Feb 12, 2018
-
 @author: animesh
 '''
 
@@ -26,10 +25,10 @@ class Application:
         builder.connect_callbacks(self)
     
     def IG_submenu_clicked(self, itemid):
-        if itemid == 'IG_submenu':
-            FS_selected = itemid
-            return FS_selected
-            print("Hello from IG")
+        print("Hello from IG")
+        FS_selected = 1
+        print(FS_selected)
+        return FS_selected
 
     def chi2_submenu_clicked(self, itemid):
         if itemid == 'chi2_submenu':
@@ -41,29 +40,6 @@ class Application:
             FS_selected = itemid
             print("Hello from reliefF")
 
-    def naivebayes_submenu_clicked(self, itemid):
-        if itemid == 'NaiveBayes_submenu':
-            clx_selected = itemid
-            print("Hello from Naive Bayes")
-            
-    def SVM_submenu_clicked(self, itemid):
-        if itemid == 'SVM_submenu':
-            clx_selected = itemid
-            print("Hello from SVM")
-            
-    def decisionTree_submenu_clicked(self, itemid):
-        if itemid == 'DecisionTree_submenu':
-            clx_selected = itemid
-            print("Hello from Decision Tree")
-            
-    def RandomForest_submenu_clicked(self, itemid):
-        if itemid == 'RandomForest_submenu':
-            clx_selected = itemid
-            print("Hello from Random Forest")       
-    
-    def detectButton_clicked(self):
-        self.master.quit()
-    
     
 
 if __name__== '__main__':
@@ -72,4 +48,3 @@ if __name__== '__main__':
     app = Application(root)
     
     root.mainloop()
-

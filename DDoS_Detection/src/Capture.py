@@ -18,6 +18,7 @@ feature = ['duration', 'protocol_type', 'service', 'flag','src_bytes','dst_bytes
 ,'dst_host_count','dst_host_srv_count','dst_host_same_srv_rate','dst_host_diff_srv_rate','dst_host_same_src_port_rate','dst_host_srv_diff_host_rate'
 ,'dst_host_serror_rate','dst_host_srv_serror_rate','dst_host_rerror_rate','dst_host_srv_rerror_rate', 'attack?']
 
+filename_adj = 'chopped_my_file'
 file_to_read = '/home/animesh/Documents/kdd99_feature_extractor-master/build/src/dump.csv'
 
 def normalize_window(cleaned_window):
@@ -88,54 +89,74 @@ def create_window(read_file, i):
             
 #Dynamically read the newest 100 enteries from the real_data csv file, normalize it and store it in a dataset
 def main():
-    #Read the csv and pass it to the create_window function to create a window of 100 packets
-    for i in range(1):
+    #Read the live csv and pass it to the create_window function to create a window of 100 packets and classify the packets
+    for i in range(5):
         with open(file_to_read, 'r') as f:
             read_file = csv.reader(f)
-            dataframe = create_window(read_file, i)
+            window_dataframe = create_window(read_file, i)
+            
             #Now get the selected FS and Classification algorithm from the GUI and classify this window
-            sorted_reliefF_list = ['srv_count', 'src_bytes', 'dst_bytes', 'dst_host_count', 'srv_diff_host_rate', 'dst_host_srv_diff_host_rate', 'dst_host_same_src_port_rate', 'dst_host_srv_count', 'dst_host_diff_srv_rate', 'dst_host_same_srv_rate', 'same_srv_rate', 'diff_srv_rate', 'duration', 'dst_host_srv_rerror_rate', 'dst_host_rerror_rate', 'dst_host_srv_serror_rate', 'dst_host_serror_rate', 'service', 'serror_rate', 'srv_serror_rate', 'srv_rerror_rate', 'rerror_rate', 'flag', 'count', 'protocol_type', 'land', 'urgent', 'wrong_fragment', 'attack?']
+            sorted_reliefF_list = ['srv_count', 'src_bytes', 'dst_bytes', 'dst_host_count', 'srv_diff_host_rate', 'dst_host_srv_diff_host_rate', 'dst_host_same_src_port_rate', 'dst_host_srv_count', 'dst_host_diff_srv_rate', 'dst_host_same_srv_rate', 'same_srv_rate', 'diff_srv_rate', 'duration', 'dst_host_srv_rerror_rate', 'dst_host_rerror_rate', 'dst_host_srv_serror_rate', 'dst_host_serror_rate', 'service', 'serror_rate', 'srv_serror_rate', 'srv_rerror_rate', 'rerror_rate', 'flag', 'count', 'protocol_type', 'land', 'urgent', 'wrong_fragment']
             selected_features = sorted_reliefF_list[0:16]
-            header_list = dataframe.columns.values
+            selected_features.append('attack?')
+            header_list = window_dataframe.columns.values
                 
+            #Preparing the subset of the live window based on the selected features
+            df_clax = pandas.DataFrame(columns=selected_features)
+            for i in range(len(selected_features)):
+                for j in range(len(header_list)):
+                    if(header_list[j]==selected_features[i]):
+                        df_clax[selected_features[i]] = window_dataframe[header_list[j]]
+            window_array = df_clax.values
+            window_array = window_array[1:]
+            window_array = window_array[:,:16]
+            print("Window array first row: ")
+            print(window_array[0])
+            print(len(window_array[0]))
+            print("*******************")
+            
+            #Reading the entire dataset
+#             dataframe = pandas.read_csv(filename_adj, names=feature)
+#             print("Not normalized dataset:")
+#             print(dataframe.head(2))
+#             print("***********************")
+            traffic = normalize(filename_adj)
+            dataframe = pandas.DataFrame(traffic)
+            dataframe.columns = feature
+            
+            header_list = dataframe.columns.values
             #Preparing the subset of the dataset based on the selected features
             df_clax = pandas.DataFrame(columns=selected_features)
             for i in range(len(selected_features)):
                 for j in range(len(header_list)):
                     if(header_list[j]==selected_features[i]):
                         df_clax[selected_features[i]] = dataframe[header_list[j]]
-            array_clx = df_clax.values
-            array_clx = array_clx[1:]
+            dataframe_array = df_clax.values
+            dataframe_array = dataframe_array[1:]
+            print("Dataframe array first row: ")
+            print(dataframe_array[0])
+            print(len(dataframe_array[0]))
             
-            #k-fold cross validation
-            kf = KFold(n_splits=20) # Define the split - into 20 folds 
-            sum = 0
-            for train, test in kf.split(array_clx):
-                train_data = np.array(array_clx)[train]
-                test_data = np.array(array_clx)[test]
-                train_data_part1 = []
-                train_data_part2 = []
-                for packet in train_data:
-                    train_data_part1.append(packet[0:15])
-                    train_data_part2.append(packet[15])
-                model = tree.DecisionTreeClassifier()
-                model.fit(train_data_part1,train_data_part2)
-                testSet_values = []    
-                for packet in test_data:
-                    testSet_values.append(packet[0:15])
-                predictions = model.predict(testSet_values)
-                accuracy = getAccuracy(test_data, predictions)
-                sum += accuracy
+            trainSet, testSet = splitDataset(dataframe_array, 0.67)
+            trainSet_part1 = []
+            trainSet_part2 = []
+            for packet in trainSet:
+                trainSet_part1.append(packet[0:16])
+                trainSet_part2.append(packet[16])
             
-            #Find the average of the accuracy results
-            average = sum/20
-            print(average)
-            return average
-
-            
-            
-            
-            
+#             model = tree.DecisionTreeClassifier()
+#             model = GaussianNB()
+#             C_range = np.logspace(-1, 10, 1)
+#             gamma_range = np.logspace(-1, 3, 1)
+#             param_grid = dict(gamma=gamma_range, C=C_range)
+#             model = GridSearchCV(SVC(), param_grid=param_grid)
+            model = RandomForestClassifier(n_estimators=10)
+            model.fit(trainSet_part1,trainSet_part2)
+            testSet_values = window_array.tolist()
+            predictions = model.predict(testSet_values)
+            print("The predicted values are: ")
+            print(predictions)
+            print("##################################################################################")
             
             
 if __name__ == "__main__":
