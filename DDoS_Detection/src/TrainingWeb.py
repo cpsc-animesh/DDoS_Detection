@@ -7,6 +7,8 @@ from the algorithms used
 
 
 from __future__ import print_function
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 from numpy import record
 import numpy as np
 import math
@@ -27,11 +29,18 @@ import pandas
 import csv,sys
 import random
 import xlwt
+import pickle
+import os
+
+PATH = os.getcwd()
+
+app = Flask(__name__)    
+CORS(app)
 
 filename = 'kddcup.data_10_percent'
 filename_adj = 'chopped_my_file'
 filename_real_data = 'real_data_cleaned'
-#filename_adj = 'my_file'
+# filename_adj = 'my_file'
 
 feature = ['duration', 'protocol_type', 'service', 'flag','src_bytes','dst_bytes','land','wrong_fragment','urgent','count','srv_count','serror_rate','srv_serror_rate','rerror_rate','srv_rerror_rate','same_srv_rate','diff_srv_rate','srv_diff_host_rate'
 ,'dst_host_count','dst_host_srv_count','dst_host_same_srv_rate','dst_host_diff_srv_rate','dst_host_same_src_port_rate','dst_host_srv_diff_host_rate'
@@ -324,7 +333,15 @@ def naive_bayes(sorted_list, num_features):
         predictions = model.predict(testSet_values)
         accuracy = getAccuracy(test_data, predictions)
         sum += accuracy
-        
+    
+    # Dump the trained decision tree classifier with Pickle
+    NB_pkl_filename = 'ReliefF_NB.pkl'
+    # Open the file to save as pkl file
+    NB_model_pkl = open(NB_pkl_filename, 'w')
+    pickle.dump(model, NB_model_pkl)
+    # Close the pickle instances
+    NB_model_pkl.close()
+
     #Find the average of the accuracy results
     average = sum/20
     print(average)
@@ -374,6 +391,14 @@ def svm(sorted_list, num_features):
         accuracy = getAccuracy(test_data, predictions)
         sum += accuracy
     
+    # Dump the trained decision tree classifier with Pickle
+    SVM_pkl_filename = 'ReliefF_SVM.pkl'
+    # Open the file to save as pkl file
+    SVM_model_pkl = open(SVM_pkl_filename, 'w')
+    pickle.dump(model, SVM_model_pkl)
+    # Close the pickle instances
+    SVM_model_pkl.close()    
+    
     #Find the average of the accuracy results
     average = sum/5
     print(average)
@@ -419,6 +444,14 @@ def decision_tree(sorted_list, num_features):
         accuracy = getAccuracy(test_data, predictions)
         sum += accuracy
     
+    DT_pkl_filename = 'ReliefF_DT.pkl'
+    # Open the file to save as pkl file
+    DT_model_pkl = open(DT_pkl_filename, 'w')
+    pickle.dump(model, DT_model_pkl)
+    # Close the pickle instances
+    DT_model_pkl.close()    
+
+    
     #Find the average of the accuracy results
     average = sum/20
     print(average)
@@ -463,8 +496,16 @@ def randomForest(sorted_list, num_features):
         predictions = model.predict(testSet_values)
         accuracy = getAccuracy(test_data, predictions)
         sum += accuracy
-        
+    
+    # Dump the trained decision tree classifier with Pickle
+    RF_pkl_filename = 'ReliefF_RF.pkl'
+    # Open the file to save as pkl file
+    RF_model_pkl = open(RF_pkl_filename, 'w')
+    pickle.dump(model, RF_model_pkl)
+    # Close the pickle instances
+    RF_model_pkl.close()
     #Find the average of the accuracy results
+    
     average = sum/20
     print(average)
     return average
@@ -475,6 +516,20 @@ def create_dataframe():
     X = array[:,0:28]
     Y = array[:,28]
     return X,Y
+
+@app.route("/calculate", methods=["GET", "POST"])
+def result():
+    data = request.form.to_dict()
+    featureAlgorithm = data['featureAlgorithm']
+    classification = data['classification']
+    print(featureAlgorithm)
+    print(classification)
+    data = {'data': {'firstname': 'Animesh', 'lastname': 'Gupta'}}
+#             return json_util.dumps({'result': True,
+#                                 'images_scored': images[0],
+#                                 'images_unscored': images[1],
+#                                 'images_unfinished': images[2]})
+    return jsonify({'result': data})
 
 def main():
     print("Starting application..\n")
@@ -515,7 +570,7 @@ def main():
     book = xlwt.Workbook(encoding="utf-8")
     sheet1 = book.add_sheet("Sheet 1")
     sheet1.write(0, 2, "Accuracy Values")
-    for i in range(1,29):
+    for i in range(16,17):
         num_features = i
         print("Number of features selected - ", i)
         if(selection == 2 and clx_selection == 1):
@@ -559,24 +614,24 @@ def main():
         
         elif(selection == 2 and clx_selection == 4):
             print("Classifying using Random Forest...")
-            accuracy = decision_tree(sorted_gain_list, num_features)
+            accuracy = randomForest(sorted_gain_list, num_features)
             sheet1.write(i, 6, accuracy)
         elif(selection == 3 and clx_selection == 4):
             print("Classifying using Random Forest...")
-            accuracy = decision_tree(sorted_chi2_list, num_features)
+            accuracy = randomForest(sorted_chi2_list, num_features)
             sheet1.write(i, 6, accuracy)
         elif(selection == 4 and clx_selection == 4):
             print("Classifying using Random Forest...")
-            accuracy = decision_tree(sorted_reliefF_list, num_features)
+            accuracy = randomForest(sorted_reliefF_list, num_features)
             sheet1.write(i, 6, accuracy)    
         
         else:
             print("Invalid Selection")
         print("End")
     book.save("results.xls")
-
+    
 if __name__ == "__main__":
-    main()
+    app.run()
     
     
     
