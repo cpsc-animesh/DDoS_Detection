@@ -31,7 +31,6 @@ import pickle
 
 filename = 'kddcup.data_10_percent'
 # filename_adj = 'chopped_my_file'
-filename_real_data = 'real_data_cleaned'
 filename_adj = 'my_file'
 
 feature = ['duration', 'protocol_type', 'service', 'flag','src_bytes','dst_bytes','land','wrong_fragment','urgent','count','srv_count','serror_rate','srv_serror_rate','rerror_rate','srv_rerror_rate','same_srv_rate','diff_srv_rate','srv_diff_host_rate'

@@ -21,7 +21,7 @@ def IG_NB(window_dataframe):
                 df_clax[selected_features[i]] = window_dataframe[header_list[j]]
     window_array = df_clax.values
     # Loading the saved pickle
-    model_pkl = open('IG_NB.pkl', 'rb')
+    model_pkl = open('./Pickles/IG_NB.pkl', 'rb')
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
@@ -41,7 +41,7 @@ def IG_SVM(window_dataframe):
                 df_clax[selected_features[i]] = window_dataframe[header_list[j]]
     window_array = df_clax.values
     # Loading the saved pickle
-    model_pkl = open('IG_SVM.pkl', 'rb')
+    model_pkl = open('./Pickles/IG_SVM.pkl', 'rb')
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
@@ -61,7 +61,7 @@ def IG_DT(window_dataframe):
                 df_clax[selected_features[i]] = window_dataframe[header_list[j]]
     window_array = df_clax.values
     # Loading the saved pickle
-    model_pkl = open('IG_DT.pkl', 'rb')
+    model_pkl = open('./Pickles/IG_DT.pkl', 'rb')
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
@@ -81,7 +81,7 @@ def IG_RF(window_dataframe):
                 df_clax[selected_features[i]] = window_dataframe[header_list[j]]
     window_array = df_clax.values
     # Loading the saved pickle
-    model_pkl = open('IG_RF.pkl', 'rb')
+    model_pkl = open('./Pickles/IG_RF.pkl', 'rb')
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
@@ -103,7 +103,7 @@ def Chi2_NB(window_dataframe):
                 df_clax[selected_features[i]] = window_dataframe[header_list[j]]
     window_array = df_clax.values
     # Loading the saved pickle
-    model_pkl = open('Chi2_NB.pkl', 'rb')
+    model_pkl = open('./Pickles/Chi2_NB.pkl', 'rb')
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
@@ -123,7 +123,7 @@ def Chi2_SVM(window_dataframe):
                 df_clax[selected_features[i]] = window_dataframe[header_list[j]]
     window_array = df_clax.values
     # Loading the saved pickle
-    model_pkl = open('Chi2_SVM.pkl', 'rb')
+    model_pkl = open('./Pickles/Chi2_SVM.pkl', 'rb')
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
@@ -143,7 +143,7 @@ def Chi2_DT(window_dataframe):
                 df_clax[selected_features[i]] = window_dataframe[header_list[j]]
     window_array = df_clax.values
     # Loading the saved pickle
-    model_pkl = open('Chi2_DT.pkl', 'rb')
+    model_pkl = open('./Pickles/Chi2_DT.pkl', 'rb')
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
@@ -163,7 +163,7 @@ def Chi2_RF(window_dataframe):
                 df_clax[selected_features[i]] = window_dataframe[header_list[j]]
     window_array = df_clax.values
     # Loading the saved pickle
-    model_pkl = open('Chi2_RF.pkl', 'rb')
+    model_pkl = open('./Pickles/Chi2_RF.pkl', 'rb')
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
@@ -185,7 +185,7 @@ def ReliefF_NB(window_dataframe):
                 df_clax[selected_features[i]] = window_dataframe[header_list[j]]
     window_array = df_clax.values
     # Loading the saved pickle
-    model_pkl = open('ReliefF_NB.pkl', 'rb')
+    model_pkl = open('./Pickles/ReliefF_NB.pkl', 'rb')
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
@@ -205,7 +205,7 @@ def ReliefF_SVM(window_dataframe):
                 df_clax[selected_features[i]] = window_dataframe[header_list[j]]
     window_array = df_clax.values
     # Loading the saved pickle
-    model_pkl = open('ReliefF_SVM.pkl', 'rb')
+    model_pkl = open('./Pickles/ReliefF_SVM.pkl', 'rb')
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
@@ -225,7 +225,7 @@ def ReliefF_DT(window_dataframe):
                 df_clax[selected_features[i]] = window_dataframe[header_list[j]]
     window_array = df_clax.values
     # Loading the saved pickle
-    model_pkl = open('ReliefF_DT.pkl', 'rb')
+    model_pkl = open('./Pickles/ReliefF_DT.pkl', 'rb')
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
@@ -245,7 +245,7 @@ def ReliefF_RF(window_dataframe):
                 df_clax[selected_features[i]] = window_dataframe[header_list[j]]
     window_array = df_clax.values
     # Loading the saved pickle
-    model_pkl = open('ReliefF_RF.pkl', 'rb')
+    model_pkl = open('./Pickles/ReliefF_RF.pkl', 'rb')
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()

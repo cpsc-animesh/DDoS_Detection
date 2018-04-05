@@ -90,14 +90,13 @@ def create_window(i):
     normalized_window = pandas.DataFrame(normalized_window)
     normalized_window.columns = feature
 #     print("Normalized Window: ", normalized_window)
-#     print("########################################################################################")
+#     print("########################################data################################################")
     return normalized_window
 
 
 @app.route("/calculate", methods=["GET", "POST"])
-def result():
+def detect():
     data = request.form.to_dict()
-#     stopdata = int(request.form['input1'])
     featureAlgorithm = data['featureAlgorithm']
     classification = data['classification']
     main(featureAlgorithm, classification)
@@ -106,8 +105,15 @@ def result():
     print(classification)
     data = {'data': {'firstname': 'asdasd', 'lastname': 'utyuyt'}}
     return jsonify({'result': data})
-   
-   
+
+@app.route("/stopCalculation", methods=["GET", "POST"])
+def stop():  
+    data = request.form.to_dict()
+    print("Varstop: ", data)
+    
+    data = {'data': {'firstname': 'asdasd', 'lastname': 'utyuyt'}}
+    return jsonify({'result': data})
+
 #Dynamically read the newest 100 entries from the real_data CSV file, normalize it and store it in a data set
 def main(featureAlgorithm, classification):
     print("Inside the main")
@@ -149,5 +155,7 @@ def main(featureAlgorithm, classification):
         else:
             print("invalid Selection")
         i = i+1
+
 if __name__ == "__main__":
-    app.run()
+#     app.run()
+    main(1,1)
