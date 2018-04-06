@@ -23,6 +23,7 @@
   
   var selection = {'featureAlgorithm': 0, 'classification': 0};
   var varstop = 0;
+  var windowContents = 0;
 
   function selectFeatureAlgorithm(method) {
     selection['featureAlgorithm'] = method
@@ -43,18 +44,51 @@
                 classification: JSON.stringify(selection['classification'])},
         success: function(data){
           console.log(data)
+        // $.each(data.result, function() {        
+        //     alert(data)
+        // });
         }
       });
   }
+
+   
+
+
+  // function drawChart(msg) {
+  //   google.charts.load('current', {'packages':['corechart']});
+  //   google.charts.setOnLoadCallback(drawChart);
+  //   xAxis = [1,len(msg)]
+  //   yAxis = msg
+
+  //   var data = google.visualization.arrayToDataTable([
+  //     ['Packet', 'Attck?'],
+  //     [xAxis,  yAxis]
+  //   ]);
+
+  //   var options = {
+  //     title: 'Network Analysis',
+  //     curveType: 'function',
+  //     legend: { position: 'bottom' }
+  //   };
+
+  //   var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+  //   chart.draw(data, options);
+  // }
+  
+
 
   function stop() {
     varstop = 1
       $.ajax({
         type: 'POST',
         url: "http://127.0.0.1:5000/stopCalculation",
-        data: JSON.stringify(varstop),  
-        success: function(data){
-          console.log(data)
+        data: {json_str: JSON.stringify(varstop)},  
+        success: function(msg){
+          windowContents = msg
+          console.log(msg)
+          // drawChart(msg)
+                alert('Capturing Stopped');
         }
       });
   }
@@ -297,22 +331,23 @@
 
       <div class="card-footer small text-muted"></div>
       <div class="card-body" style="text-align: center;">
-        <button class="btn btn-primary btn-lg" style="width: 40%; height: 60px; background-color: green; border: none;" onclick="detect()">Detect</button>
+        <button class="btn btn-primary btn-lg" style="width: 40%; height: 60px; background-color: green; border: none;" onclick="detect()">Start Capture</button>
       </div>
       <div class="card-footer small text-muted"></div>
       <div class="card-body" style="text-align: right;">
-        <button type="button" class="btn btn-primary btn-lg" style="width: 20%; height: 60px; background-color: red; border: none;" onclick="stop()">Stop</button>
+        <button type="button" class="btn btn-primary btn-lg" style="width: 20%; height: 60px; background-color: red; border: none;" onclick="stop()">Stop Capture</button>
       </div>
 
 <!--       <!-- Area Chart Example-->
       <div class="card mb-3">
         <div class="card-header">
-          <i class="fa fa-area-chart"></i> Live Tracking</div>
+          <i class="fa fa-area-chart"></i> Live Network Status</div>
         <div class="card-body">
           <canvas id="myAreaChart" width="100%" height="30"></canvas>
         </div>
-        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+        <div class="card-footer small text-muted"></div>
       </div>
+      
       <div class="row">
         <div class="col-lg-8">
           <!-- Example Bar Chart Card-->
@@ -325,14 +360,11 @@
                   <canvas id="myBarChart" width="100" height="70"></canvas>
                 </div>
                 <div class="col-sm-4 text-center my-auto">
-                  <div class="h4 mb-0 text-primary">$34,693</div>
-                  <div class="small text-muted">YTD Revenue</div>
+                  <div class="h4 mb-0 text-primary">Dynamic</div>
+                  <div class="small text-muted"># Attack Windows</div>
                   <hr>
-                  <div class="h4 mb-0 text-warning">$18,474</div>
-                  <div class="small text-muted">YTD Expenses</div>
-                  <hr>
-                  <div class="h4 mb-0 text-success">$16,219</div>
-                  <div class="small text-muted">YTD Margin</div>
+                  <div class="h4 mb-0 text-warning">Dynamic</div>
+                  <div class="small text-muted"># Normal Windows</div>
                 </div>
               </div>
             </div>
@@ -362,10 +394,10 @@
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Position</th>
-                  <th>Office</th>
-                  <th>Age</th>
+                  <th>Naive Bayes</th>
+                  <th>SVM</th>
+                  <th>Decision Tree</th>
+                  <th>Random Forest</th>
                   <th>Start date</th>
                   <th>Salary</th>
                 </tr>
@@ -881,14 +913,14 @@
     <!-- Core plugin JavaScript-->
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
     <!-- Page level plugin JavaScript-->
-    <script src="vendor/chart.js/Chart.min.js"></script>
+    <!-- <script src="vendor/chart.js/Chart.min.js"></script> -->
     <script src="vendor/datatables/jquery.dataTables.js"></script>
     <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin.min.js"></script>
     <!-- Custom scripts for this page-->
     <script src="js/sb-admin-datatables.min.js"></script>
-    <script src="js/sb-admin-charts.min.js"></script>
+<!--     <script src="js/sb-admin-charts.js"></script> -->
   </div> -->
 </body>
 

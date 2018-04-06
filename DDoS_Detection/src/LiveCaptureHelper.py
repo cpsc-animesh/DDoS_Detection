@@ -25,9 +25,10 @@ def IG_NB(window_dataframe):
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
-    predictions = model.predict(testSet_values)
+    predictions = (model.predict(testSet_values)).tolist()
     print("The predicted values for IG_NB are: ")
     print(predictions)
+    return (predictions)
     
 def IG_SVM(window_dataframe):
     header_list = window_dataframe.columns.values
@@ -45,9 +46,10 @@ def IG_SVM(window_dataframe):
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
-    predictions = model.predict(testSet_values)
+    predictions = (model.predict(testSet_values)).tolist()
     print("The predicted values for IG_SVM are: ")
     print(predictions)
+    return (predictions)
     
 def IG_DT(window_dataframe):
     header_list = window_dataframe.columns.values
@@ -65,9 +67,10 @@ def IG_DT(window_dataframe):
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
-    predictions = model.predict(testSet_values)
+    predictions = (model.predict(testSet_values)).tolist()
     print("The predicted values for IG_DT are: ")
     print(predictions)
+    return (predictions)
     
 def IG_RF(window_dataframe):
     header_list = window_dataframe.columns.values
@@ -85,10 +88,10 @@ def IG_RF(window_dataframe):
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
-    predictions = model.predict(testSet_values)
+    predictions = (model.predict(testSet_values)).tolist()
     print("The predicted values for IG_RF are: ")
     print(predictions)
-
+    return (predictions)
 
 
 def Chi2_NB(window_dataframe):
@@ -107,9 +110,10 @@ def Chi2_NB(window_dataframe):
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
-    predictions = model.predict(testSet_values)
+    predictions = (model.predict(testSet_values)).tolist()
     print("The predicted values for Chi2_NB are: ")
     print(predictions)
+    return (predictions)
 
 def Chi2_SVM(window_dataframe):
     header_list = window_dataframe.columns.values
@@ -127,9 +131,10 @@ def Chi2_SVM(window_dataframe):
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
-    predictions = model.predict(testSet_values)
+    predictions = (model.predict(testSet_values)).tolist()
     print("The predicted values for Chi2_SVM are: ")
     print(predictions)
+    return (predictions)
 
 def Chi2_DT(window_dataframe):
     header_list = window_dataframe.columns.values
@@ -147,9 +152,10 @@ def Chi2_DT(window_dataframe):
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
-    predictions = model.predict(testSet_values)
+    predictions = (model.predict(testSet_values)).tolist()
     print("The predicted values for Chi2_DT are: ")
     print(predictions)
+    return (predictions)
 
 def Chi2_RF(window_dataframe):
     header_list = window_dataframe.columns.values
@@ -167,9 +173,10 @@ def Chi2_RF(window_dataframe):
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
-    predictions = model.predict(testSet_values)
+    predictions = (model.predict(testSet_values)).tolist()
     print("The predicted values for Chi2_RF are: ")
     print(predictions)
+    return (predictions)
 
 
 
@@ -189,9 +196,10 @@ def ReliefF_NB(window_dataframe):
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
-    predictions = model.predict(testSet_values)
+    predictions = (model.predict(testSet_values)).tolist()
     print("The predicted values for ReliefF_NB are: ")
     print(predictions)
+    return (predictions)
     
 def ReliefF_SVM(window_dataframe):
     header_list = window_dataframe.columns.values
@@ -209,9 +217,10 @@ def ReliefF_SVM(window_dataframe):
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
-    predictions = model.predict(testSet_values)
+    predictions = (model.predict(testSet_values)).tolist()
     print("The predicted values for ReliefF_SVM are: ")
     print(predictions)
+    return (predictions)
 
 def ReliefF_DT(window_dataframe):
     header_list = window_dataframe.columns.values
@@ -229,9 +238,10 @@ def ReliefF_DT(window_dataframe):
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
-    predictions = model.predict(testSet_values)
+    predictions = (model.predict(testSet_values)).tolist()
     print("The predicted values for ReliefF_DT are: ")
     print(predictions)
+    return (predictions)
 
 def ReliefF_RF(window_dataframe):
     header_list = window_dataframe.columns.values
@@ -249,8 +259,9 @@ def ReliefF_RF(window_dataframe):
     model = pickle.load(model_pkl)
     
     testSet_values = window_array.tolist()
-    predictions = model.predict(testSet_values)
+    predictions = (model.predict(testSet_values)).tolist()
     print("The predicted values for ReliefF_RF are: ")
     print(predictions)
+    return (predictions)
 
     

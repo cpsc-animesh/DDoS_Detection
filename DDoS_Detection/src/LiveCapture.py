@@ -3,26 +3,29 @@ Created on Jan 23, 2018
 
 @author: animesh
 '''
-import LiveCaptureHelper
-from flask.globals import request
-
 '''
 This file continously reads from a rolling window of live network packets and filters out the features based on the selected
 feature selection algorithm and applies the selected classification algorithm to return the prediction with an accuracy
 percentage
 '''
 
-import csv
+import LiveCaptureHelper
+from flask.globals import request
+import csv, json
 import pandas
 from Training import *
 import pickle
 import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import json
+import time, multiprocessing
 
 PATH = os.getcwd()
 app = Flask(__name__)    
 CORS(app)
+
+data = 0
 
 feature = ['duration', 'protocol_type', 'service', 'flag','src_bytes','dst_bytes','land','wrong_fragment','urgent','count','srv_count','serror_rate','srv_serror_rate','rerror_rate','srv_rerror_rate','same_srv_rate','diff_srv_rate','srv_diff_host_rate'
 ,'dst_host_count','dst_host_srv_count','dst_host_same_srv_rate','dst_host_diff_srv_rate','dst_host_same_src_port_rate','dst_host_srv_diff_host_rate'
@@ -99,63 +102,91 @@ def detect():
     data = request.form.to_dict()
     featureAlgorithm = data['featureAlgorithm']
     classification = data['classification']
-    main(featureAlgorithm, classification)
-    print("This is after executing the main function")
     print(featureAlgorithm)
     print(classification)
-    data = {'data': {'firstname': 'asdasd', 'lastname': 'utyuyt'}}
-    return jsonify({'result': data})
+    manager = multiprocessing.Manager()
+
+    global l
+    l = manager.list()
+    global p1
+    p1 = multiprocessing.Process(target= main, args=(featureAlgorithm, classification, l))
+    print(p1)
+    p1.start()
+#     print(predictions)
+#     print(type(predictions))
+#     return json.dumps({'result':predictions})
+    msg = "Return message from the detect function"
+    return jsonify(msg)
 
 @app.route("/stopCalculation", methods=["GET", "POST"])
-def stop():  
-    data = request.form.to_dict()
-    print("Varstop: ", data)
+def stop():
+    global p1
+    p1.terminate()
+    global l
+    print("==============================================================")
+    print(l)
+    print(len(l))
+    print(type(l))
+    MyList = []
+    for x in l:
+        MyList.append(x)
     
-    data = {'data': {'firstname': 'asdasd', 'lastname': 'utyuyt'}}
-    return jsonify({'result': data})
+    print(type(MyList))
+    return json.dumps({'result':MyList})
 
 #Dynamically read the newest 100 entries from the real_data CSV file, normalize it and store it in a data set
-def main(featureAlgorithm, classification):
+def main(featureAlgorithm, classification,a):
     print("Inside the main")
     featureAlgorithm = int(featureAlgorithm)
     classification = int(classification)
-
     #Read the live CSV and pass it to the create_window function to create a window of 100 packets and classify the packets
+    global data
     i=0
-    while 1:
+    while (data == 0): 
         window_dataframe = create_window(i)    
-      
         if(featureAlgorithm == 1 and classification == 1):
-            LiveCaptureHelper.IG_NB(window_dataframe)
+            predictions = LiveCaptureHelper.IG_NB(window_dataframe)
+            a.extend(predictions)
         elif(featureAlgorithm == 1 and classification == 2):
-            LiveCaptureHelper.IG_SVM(window_dataframe)   
+            predictions = LiveCaptureHelper.IG_SVM(window_dataframe)
+            a.extend(predictions) 
         elif(featureAlgorithm == 1 and classification == 3):
-            LiveCaptureHelper.IG_DT(window_dataframe)            
+            predictions = LiveCaptureHelper.IG_DT(window_dataframe)
+            a.extend(predictions)            
         elif(featureAlgorithm == 1 and classification == 4):
-            LiveCaptureHelper.IG_RF(window_dataframe)
+            predictions = LiveCaptureHelper.IG_RF(window_dataframe)
+            a.extend(predictions)
 
         elif(featureAlgorithm == 2 and classification == 1):
-            LiveCaptureHelper.Chi2_NB(window_dataframe)
+            predictions = LiveCaptureHelper.Chi2_NB(window_dataframe)
+            a.extend(predictions)
         elif(featureAlgorithm == 2 and classification == 2):
-            LiveCaptureHelper.Chi2_SVM(window_dataframe)
+            predictions = LiveCaptureHelper.Chi2_SVM(window_dataframe)
+            a.extend(predictions)
         elif(featureAlgorithm == 2 and classification == 3):
-            LiveCaptureHelper.Chi2_DT(window_dataframe)
+            predictions = LiveCaptureHelper.Chi2_DT(window_dataframe)
+            a.extend(predictions)
         elif(featureAlgorithm == 2 and classification == 4):
-            LiveCaptureHelper.Chi2_RF(window_dataframe)
+            predictions = LiveCaptureHelper.Chi2_RF(window_dataframe)
+            a.extend(predictions)
         
         elif(featureAlgorithm == 3 and classification == 1):
-            LiveCaptureHelper.ReliefF_NB(window_dataframe)
+            predictions = LiveCaptureHelper.ReliefF_NB(window_dataframe)
+            a.extend(predictions)
         elif(featureAlgorithm == 3 and classification == 2):
-            LiveCaptureHelper.ReliefF_SVM(window_dataframe)
+            predictions = LiveCaptureHelper.ReliefF_SVM(window_dataframe)
+            a.extend(predictions)
         elif(featureAlgorithm == 3 and classification == 3):
-            LiveCaptureHelper.ReliefF_DT(window_dataframe)
+            predictions = LiveCaptureHelper.ReliefF_DT(window_dataframe)
+            a.extend(predictions)
         elif(featureAlgorithm == 3 and classification == 4):
-            LiveCaptureHelper.ReliefF_RF(window_dataframe)
+            predictions = LiveCaptureHelper.ReliefF_RF(window_dataframe)
+            a.extend(predictions)
             
         else:
             print("invalid Selection")
         i = i+1
-
+    return a
 if __name__ == "__main__":
-#     app.run()
-    main(1,1)
+    app.run()
+
