@@ -17,24 +17,28 @@
   <!-- Custom styles for this template-->
   <link href="css/sb-admin.css" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
 </head>
 
 <script type="text/javascript">
-  
   var selection = {'featureAlgorithm': 0, 'classification': 0};
   var varstop = 0;
   var windowContents = 0;
 
+  // Get the selected Feature Selection Algorithm
   function selectFeatureAlgorithm(method) {
     selection['featureAlgorithm'] = method
     document.getElementById("FS_dd").innerText=document.getElementById("fs"+method).innerText;
   }
 
+  // Get the selected Classification Algorithm
   function selectClassification(method) {
     selection['classification'] = method
     document.getElementById("Classification_dd").innerText=document.getElementById("clx"+method).innerText;
   }
 
+  // Start Capture button function call
   function detect() {
     console.log(selection)
       $.ajax({
@@ -51,33 +55,14 @@
       });
   }
 
-   
+  // Function to plot the line chart
+  function drawChart(windowContents){
+       src="js/sb-admin-charts.js"
+      
+  };
 
 
-  // function drawChart(msg) {
-  //   google.charts.load('current', {'packages':['corechart']});
-  //   google.charts.setOnLoadCallback(drawChart);
-  //   xAxis = [1,len(msg)]
-  //   yAxis = msg
-
-  //   var data = google.visualization.arrayToDataTable([
-  //     ['Packet', 'Attck?'],
-  //     [xAxis,  yAxis]
-  //   ]);
-
-  //   var options = {
-  //     title: 'Network Analysis',
-  //     curveType: 'function',
-  //     legend: { position: 'bottom' }
-  //   };
-
-  //   var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
-
-  //   chart.draw(data, options);
-  // }
-  
-
-
+  // Stop Capture button function call
   function stop() {
     varstop = 1
       $.ajax({
@@ -86,8 +71,8 @@
         data: {json_str: JSON.stringify(varstop)},  
         success: function(msg){
           windowContents = msg
-          console.log(msg)
-          // drawChart(msg)
+          // console.log(msg)
+          drawChart(windowContents)
                 alert('Capturing Stopped');
         }
       });
